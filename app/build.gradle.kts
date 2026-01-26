@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "edu.nd.pmcburne.counters"
+    namespace = "edu.nd.pmcburne.hello"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "edu.nd.pmcburne.counters"
+        applicationId = "edu.nd.pmcburne.hello"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

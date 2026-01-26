@@ -1,4 +1,4 @@
-package edu.nd.pmcburne.counters
+package edu.nd.pmcburne.hello
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package edu.nd.pmcburne.counters.ui.theme
+package edu.nd.pmcburne.hello.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
