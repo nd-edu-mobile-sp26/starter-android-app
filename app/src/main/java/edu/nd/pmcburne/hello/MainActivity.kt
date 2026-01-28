@@ -75,9 +75,8 @@ fun Counter(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val counterValue = uiState.counterValue
     Row {
-        Text("Value: $counterValue")
+        Text("Value: ${uiState.counterValue}")
         Button( // increment button
             onClick = { viewModel.incrementCounter() },
             modifier = modifier
