@@ -70,9 +70,7 @@ fun Counter(initialValue: Int = 0, modifier: Modifier = Modifier) {
         Button(
             onClick = { value++ },
             modifier = modifier
-        ) {
-            Text("+")
-        }
+        ) { Text("+") }
         Button(
             onClick = { value-- },
             enabled = value > 0,
