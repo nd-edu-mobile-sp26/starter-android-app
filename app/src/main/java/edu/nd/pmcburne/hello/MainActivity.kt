@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,13 +32,15 @@ import androidx.compose.ui.unit.sp
 import edu.nd.pmcburne.hello.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
+    private val viewModel by viewModels<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen(modifier = Modifier.padding(innerPadding))
+                    MainScreen(viewModel, modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -44,13 +48,16 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen(
+    viewModel: MainViewModel,
+    modifier: Modifier = Modifier
+) {
     Column(modifier = modifier) {
         Text(
             "Welcome to the Counter App!"
         )
         Spacer(modifier = modifier.height(16.dp))
-        Counter(initialValue = 0)
+        Counter(viewModel)
     }
 }
 
@@ -58,29 +65,33 @@ fun MainScreen(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 fun PreviewMainScreen() {
     MyApplicationTheme {
-        MainScreen()
+        MainScreen(viewModel = MainViewModel())
     }
 }
 
 @Composable
-fun Counter(initialValue: Int = 0, modifier: Modifier = Modifier) {
-    var value by rememberSaveable { mutableStateOf(initialValue) }
+fun Counter(
+    viewModel: MainViewModel,
+    modifier: Modifier = Modifier
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val counterValue = uiState.counterValue
     Row {
-        Text("Value: $value")
-        Button(
-            onClick = { value++ },
+        Text("Value: $counterValue")
+        Button( // increment button
+            onClick = { viewModel.incrementCounter() },
             modifier = modifier
         ) { Text("+") }
-        Button(
-            onClick = { value-- },
-            enabled = value > 0,
+        Button( //decrement button
+            onClick = { viewModel.decrementCounter() },
+            enabled = viewModel.isDecrementEnabled,
             modifier = modifier
         ) {
             Text("-")
         }
-        Button(
-            onClick = { value = 0 },
-            enabled = value > 0,
+        Button( // reset button
+            onClick = { viewModel.incrementCounter() },
+            enabled = viewModel.isResetEnabled,
             modifier = modifier
         ) {
             Text("Reset")
@@ -95,6 +106,6 @@ fun Counter(initialValue: Int = 0, modifier: Modifier = Modifier) {
 @Composable
 fun CounterPreview() {
     MyApplicationTheme {
-        Counter(0)
+        Counter(viewModel = MainViewModel(0))
     }
 }
