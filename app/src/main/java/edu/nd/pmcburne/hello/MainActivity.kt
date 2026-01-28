@@ -64,7 +64,7 @@ fun PreviewMainScreen() {
 
 @Composable
 fun Counter(initialValue: Int = 0, modifier: Modifier = Modifier) {
-    var value by rememberSaveable { mutableStateOf(initialValue) }
+    var value by remember { mutableStateOf(initialValue) }
     Row {
         Text("Value: $value")
         Button(
