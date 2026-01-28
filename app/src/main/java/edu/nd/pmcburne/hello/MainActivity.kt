@@ -89,7 +89,7 @@ fun Counter(
             Text("-")
         }
         Button( // reset button
-            onClick = { viewModel.incrementCounter() },
+            onClick = { viewModel.resetCounter() },
             enabled = viewModel.isResetEnabled,
             modifier = modifier
         ) {
