@@ -80,9 +80,14 @@ class MainViewModel(
         }
     }
 
+    fun deleteCounter(counter: Counter) {
+        viewModelScope.launch(IO) {
+            counterDao.deleteCounter(counter)
+        }
+    }
+
     /** checks if the increment button should be enabled */
     fun isDecrementEnabled(counter: Counter): Boolean = counter.value > 0
-
     /** checks if the decrement button should be enabled */
     fun isResetEnabled(counter: Counter): Boolean = counter.value > 0
 }

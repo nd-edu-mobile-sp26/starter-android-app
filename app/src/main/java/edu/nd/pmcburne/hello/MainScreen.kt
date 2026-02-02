@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Add
+import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -170,6 +171,12 @@ fun CounterCard(
                     modifier = modifier
                 ) {
                     Text("Reset")
+                }
+                Button( // delete button
+                    onClick = { viewModel.deleteCounter(counter) },
+                    modifier = modifier
+                ) {
+                   Icon(Icons.TwoTone.Delete, contentDescription = "delete counter")
                 }
 
             }
