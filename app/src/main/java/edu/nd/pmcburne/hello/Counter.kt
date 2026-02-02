@@ -19,3 +19,4 @@ data class Counter(
     @PrimaryKey(autoGenerate = true)
     val uid: Long = 0,
 )
+

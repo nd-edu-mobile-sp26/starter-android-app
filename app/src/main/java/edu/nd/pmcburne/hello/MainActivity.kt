@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import edu.nd.pmcburne.hello.ui.theme.MyApplicationTheme
@@ -22,6 +25,8 @@ class MainActivity : ComponentActivity() {
         return@lazy database.counterDao()
     }
 
+    private val dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
     /**
      * Because we need to pass information into our view model, we need to update how that
      * view model is created via a factoryProducer.
@@ -33,7 +38,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return MainViewModel(counterDao) as T
+                    return MainViewModel(counterDao, dataStore) as T
                 }
             }
         }

@@ -1,31 +1,47 @@
 package edu.nd.pmcburne.hello
 
+
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+
+val TEXT_FIELD_CONTENTS = stringPreferencesKey("TEXT_FIELD")
 
 /** the state of the counter on our main screen */
 
 
 class MainViewModel(
-    val counterDao: CounterDao
+    val counterDao: CounterDao,
+    val dataStore: DataStore<Preferences>
 ): ViewModel() {
     private val _countersState = MutableStateFlow<List<Counter>>(emptyList())
     val countersState: StateFlow<List<Counter>> = _countersState.asStateFlow()
 
-    init {
-        viewModelScope.launch(IO) {
-            // whenever the counterDao notifies of an update, update the state and notify the UI
-            counterDao.getAll().collect { newCounters ->
-                _countersState.update { newCounters }
+    val userNameFlow: Flow<String> = dataStore.data
+        .map { preferences ->
+            preferences[TEXT_FIELD_CONTENTS] ?: ""
+        }
+
+    // A function to save the data
+    fun saveTextField(newName: String) {
+        viewModelScope.launch {
+            dataStore.edit { settings ->
+                settings[TEXT_FIELD_CONTENTS] = newName
             }
         }
     }
+
+
 
     fun addNewCounter() {
         viewModelScope.launch(IO) {
