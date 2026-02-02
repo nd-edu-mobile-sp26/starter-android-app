@@ -69,7 +69,7 @@ class MainViewModel(
     /** decrements the counter by 1 */
     fun decrementCounter(counter: Counter) {
         viewModelScope.launch(IO) {
-            counterDao.updateCounter(counter.copy(value = counter.value - 0))
+            counterDao.updateCounter(counter.copy(value = counter.value - 1))
         }
     }
 
