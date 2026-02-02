@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +33,7 @@ class MainViewModel(
 
 
     init {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch {
             counterDao.getAll().collect { newCounters ->
                 _countersState.value = newCounters
             }
@@ -53,7 +52,7 @@ class MainViewModel(
 
 
     fun addNewCounter() {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch {
             val maxId = _countersState.value.maxOfOrNull { it.uid }?: 0
             counterDao.insertCounter(Counter(name = "Counter ${maxId + 1}"))
         }
@@ -61,27 +60,27 @@ class MainViewModel(
 
     /** increments the counter by 1 */
     fun incrementCounter(counter: Counter) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch {
             counterDao.updateCounter(counter.copy(value = counter.value + 1))
         }
     }
 
     /** decrements the counter by 1 */
     fun decrementCounter(counter: Counter) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch {
             counterDao.updateCounter(counter.copy(value = counter.value - 1))
         }
     }
 
     /** resets the counter to 0 */
     fun resetCounter(counter: Counter) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch {
             counterDao.updateCounter(counter.copy(value = 0))
         }
     }
 
     fun deleteCounter(counter: Counter) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch {
             counterDao.deleteCounter(counter)
         }
     }
