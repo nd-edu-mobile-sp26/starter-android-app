@@ -32,6 +32,15 @@ class MainViewModel(
             preferences[TEXT_FIELD_CONTENTS] ?: ""
         }
 
+
+    init {
+        viewModelScope.launch(IO) {
+            counterDao.getAll().collect { newCounters ->
+                _countersState.value = newCounters
+            }
+        }
+    }
+
     // A function to save the data
     fun saveTextField(newName: String) {
         viewModelScope.launch {
