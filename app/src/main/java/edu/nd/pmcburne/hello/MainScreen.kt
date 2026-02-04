@@ -55,7 +55,7 @@ fun MainScreen(
 @Composable
 fun DataStoreTextFieldExample(viewModel: MainViewModel) {
     // 1. Observe the persisted value from DataStore
-    val savedName by viewModel.userNameFlow.collectAsState(initial = "")
+    val savedName by viewModel.savedTextField.collectAsState(initial = "")
 
     // 2. Local state for what is currently in the TextField
     var textFieldValue by rememberSaveable { mutableStateOf("") }

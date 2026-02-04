@@ -7,11 +7,12 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 val TEXT_FIELD_CONTENTS = stringPreferencesKey("TEXT_FIELD")
@@ -23,13 +24,19 @@ class MainViewModel(
     val counterDao: CounterDao,
     val dataStore: DataStore<Preferences>
 ): ViewModel() {
-    private val _countersState = MutableStateFlow<List<Counter>>(emptyList())
-    val countersState: StateFlow<List<Counter>> = _countersState.asStateFlow()
-
-    val userNameFlow: Flow<String> = dataStore.data
+    val savedTextField: StateFlow<String> = dataStore.data
         .map { preferences ->
             preferences[TEXT_FIELD_CONTENTS] ?: ""
         }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ""
+        )
+
+    private val _countersState = MutableStateFlow<List<Counter>>(emptyList())
+    val countersState: StateFlow<List<Counter>> = _countersState.asStateFlow()
+
 
 
     init {
@@ -40,7 +47,9 @@ class MainViewModel(
         }
     }
 
-    // A function to save the data
+    /**
+     * Persists the text field using data store
+     */
     fun saveTextField(newName: String) {
         viewModelScope.launch {
             dataStore.edit { settings ->
@@ -49,8 +58,9 @@ class MainViewModel(
         }
     }
 
-
-
+    /**
+     * Adds a new counter to the screen
+     */
     fun addNewCounter() {
         viewModelScope.launch {
             val maxId = _countersState.value.maxOfOrNull { it.uid }?: 0
@@ -79,6 +89,7 @@ class MainViewModel(
         }
     }
 
+    /** delete the counter */
     fun deleteCounter(counter: Counter) {
         viewModelScope.launch {
             counterDao.deleteCounter(counter)
