@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -45,7 +44,7 @@ class MainActivity : ComponentActivity() {
                         startDestination = HomeRoute,
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        composable<HomeRoute> {
+                        composable<HomeRoute> { backStackEntry ->
                             @Suppress("UNCHECKED_CAST")
                             val mainViewModel = ViewModelProvider(this@MainActivity, object : ViewModelProvider.Factory {
                                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -62,10 +61,11 @@ class MainActivity : ComponentActivity() {
                             val route: EditRoute = backStackEntry.toRoute()
 
                             // Manual Factory for EditViewModel using the ID from navigation
+                            // Scoped to backStackEntry so it recreates for different IDs
                             @Suppress("UNCHECKED_CAST")
-                            val vm = ViewModelProvider(this@MainActivity, object : ViewModelProvider.Factory {
+                            val vm = ViewModelProvider(backStackEntry, object : ViewModelProvider.Factory {
                                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                                    return EditViewModel(counterDao, route.id.toLong()) as T
+                                    return EditViewModel(counterDao, route.id) as T
                                 }
                             })[EditViewModel::class.java]
 
@@ -77,4 +77,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
