@@ -20,8 +20,8 @@ class EditViewModel(
 
     fun changeCounterName(newName: String) {
         viewModelScope.launch {
-            counterState.value?.let {
-                counterDao.updateCounter(it.copy(name = newName))
+            counterState.value?.let { counter ->
+                counterDao.updateCounter(counter.copy(name = newName))
             }
         }
     }

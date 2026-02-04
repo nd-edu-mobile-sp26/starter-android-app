@@ -107,8 +107,7 @@ fun EditScreenCounterCard(
                 ) {
                     Text("Reset")
                 }
-                Button(
-                    // delete button
+                Button( // delete Button
                     onClick = {
                         viewModel.deleteCounter()
                         navController.popBackStack()

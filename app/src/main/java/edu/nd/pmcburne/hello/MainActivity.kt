@@ -1,5 +1,6 @@
 package edu.nd.pmcburne.hello
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import edu.nd.pmcburne.hello.ui.theme.MyApplicationTheme
 
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class MainActivity : ComponentActivity() {
     /**
@@ -28,9 +30,6 @@ class MainActivity : ComponentActivity() {
         val database = CounterDatabase.getDatabase(applicationContext)
         return@lazy database.counterDao()
     }
-
-    private val dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +47,7 @@ class MainActivity : ComponentActivity() {
                             @Suppress("UNCHECKED_CAST")
                             val mainViewModel = ViewModelProvider(this@MainActivity, object : ViewModelProvider.Factory {
                                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                                    return MainViewModel(counterDao, dataStore) as T
+                                    return MainViewModel(counterDao, applicationContext.dataStore) as T
                                 }
                             })[MainViewModel::class.java]
                             MainScreen(
