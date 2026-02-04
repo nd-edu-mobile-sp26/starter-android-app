@@ -27,7 +27,7 @@ interface CounterDao {
      * we want the output of this function to be notified if the counter is updated.
      */
     @Query("SELECT * FROM counter WHERE uid = :counterId")
-    fun getById(counterId: Long): Flow<Counter>
+    fun getById(counterId: Long): Flow<Counter?>
 
     /**
      * Inserts a new counter into the database. This will automatically assign the counter

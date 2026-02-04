@@ -6,4 +6,7 @@ plugins {
 
     // ksp plugin used by room
     alias(libs.plugins.ksp) apply false
+
+    // serialization plugin used by navigation
+    alias(libs.plugins.kotlin.serialization) apply false
 }

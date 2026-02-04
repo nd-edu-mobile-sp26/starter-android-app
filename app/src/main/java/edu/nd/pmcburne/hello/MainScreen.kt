@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material.icons.twotone.Delete
+import androidx.compose.material.icons.twotone.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,10 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @Composable
 fun MainScreen(
     viewModel: MainViewModel,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -48,7 +51,7 @@ fun MainScreen(
         DataStoreTextFieldExample(viewModel)
         Spacer(modifier = modifier.height(8.dp))
         NewCounterButton(viewModel)
-        CounterColumn(viewModel)
+        CounterColumn(viewModel, navController)
     }
 }
 
@@ -127,6 +130,7 @@ fun NewCounterButton(viewModel: MainViewModel) {
 @Composable
 fun CounterColumn(
     viewModel: MainViewModel,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -134,7 +138,7 @@ fun CounterColumn(
         Column(modifier = Modifier.fillMaxWidth()) {
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(counters) { counter ->
-                    CounterCard(viewModel, counter)
+                    CounterCard(viewModel, navController, counter)
                 }
             }
         }
@@ -144,15 +148,26 @@ fun CounterColumn(
 @Composable
 fun CounterCard(
     viewModel: MainViewModel,
+    navController: NavController,
     counter: Counter,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Surface(modifier = Modifier.padding(4.dp)) {
         Column {
-            Text(
-                text = "Value: ${counter.name} - ${counter.value}",
-                style = MaterialTheme.typography.titleMedium
-            )
+            Row {
+                Text(
+                    text = "Value: ${counter.name} - ${counter.value}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                IconButton(
+                    onClick = {
+                        navController.navigate(EditRoute(counter.uid))
+                    }
+                ) {
+                    Icon(Icons.TwoTone.Edit, contentDescription = "edit counter")
+                }
+
+            }
             Row {
                 Button( // increment button
                     onClick = { viewModel.incrementCounter(counter) },

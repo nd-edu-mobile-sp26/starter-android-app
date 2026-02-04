@@ -14,7 +14,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import edu.nd.pmcburne.hello.ui.theme.MyApplicationTheme
+
 
 class MainActivity : ComponentActivity() {
     /**
@@ -27,22 +32,6 @@ class MainActivity : ComponentActivity() {
 
     private val dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-    /**
-     * Because we need to pass information into our view model, we need to update how that
-     * view model is created via a factoryProducer.
-     *
-     * Specifically here, we are injecting our CounterDao into our view model.
-     */
-    @Suppress("UNCHECKED_CAST")
-    private val mainViewModel by viewModels<MainViewModel>(
-        factoryProducer = {
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return MainViewModel(counterDao, dataStore) as T
-                }
-            }
-        }
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +39,39 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen(viewModel = mainViewModel, modifier = Modifier.padding(innerPadding))
+                    val navController = rememberNavController()
+                    NavHost(
+                        navController = navController,
+                        startDestination = HomeRoute,
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable<HomeRoute> {
+                            @Suppress("UNCHECKED_CAST")
+                            val mainViewModel = ViewModelProvider(this@MainActivity, object : ViewModelProvider.Factory {
+                                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                                    return MainViewModel(counterDao, dataStore) as T
+                                }
+                            })[MainViewModel::class.java]
+                            MainScreen(
+                                viewModel = mainViewModel,
+                                navController = navController
+                            )
+                        }
+                        composable<EditRoute> { backStackEntry ->
+                            // Extract ID from the route
+                            val route: EditRoute = backStackEntry.toRoute()
+
+                            // Manual Factory for EditViewModel using the ID from navigation
+                            @Suppress("UNCHECKED_CAST")
+                            val vm = ViewModelProvider(this@MainActivity, object : ViewModelProvider.Factory {
+                                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                                    return EditViewModel(counterDao, route.id.toLong()) as T
+                                }
+                            })[EditViewModel::class.java]
+
+                            EditScreen(viewModel = vm, navController = navController)
+                        }
+                    }
                 }
             }
         }

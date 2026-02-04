@@ -5,6 +5,9 @@ plugins {
 
     // ksp plug-in used by room
     alias(libs.plugins.ksp)
+
+    // serialization plug-in used by navigation
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -33,11 +36,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -45,6 +48,7 @@ android {
 }
 
 dependencies {
+    // Android default libraries
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -61,11 +65,22 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    //Room
+    // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
-    //DataStore
+    // DataStore
     implementation(libs.androidx.datastore.preferences)
+
+    // Navigation
+    val navigationVersion = "2.9.7"
+    implementation("androidx.navigation:navigation-compose:$navigationVersion")
+
+    // Navigation Testing
+    androidTestImplementation(libs.androidx.navigation.testing)
+
+    // Serialization
+    implementation(libs.kotlinx.serialization.json)
+
 }
