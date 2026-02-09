@@ -20,12 +20,11 @@ import androidx.compose.ui.unit.dp
 import edu.nd.pmcburne.hello.ui.theme.MyApplicationTheme
 
 
-sealed interface CounterCardEvent {
-    data object Increment: CounterCardEvent
-    data object Decrement: CounterCardEvent
-    data object Reset: CounterCardEvent
-    data object Delete: CounterCardEvent
-    data object Edit: CounterCardEvent
+sealed interface CounterEvent {
+    data object Increment: CounterEvent
+    data object Decrement: CounterEvent
+    data object Reset: CounterEvent
+    data object Delete: CounterEvent
 }
 
 @Composable
@@ -34,7 +33,8 @@ fun CounterCard(
     isDecrementEnabled: Boolean,
     isResetEnabled: Boolean,
     isEditVisible: Boolean = false,
-    onEvent: (CounterCardEvent) -> Unit,
+    onCounterEvent: (CounterEvent) -> Unit,
+    onEditClick: () -> Unit = {},
 ) {
     Surface(modifier = Modifier.padding(4.dp)) {
         Column {
@@ -44,7 +44,7 @@ fun CounterCard(
                     style = MaterialTheme.typography.titleMedium
                 )
                 if (isEditVisible) {
-                    IconButton(onClick = { onEvent(CounterCardEvent.Edit) }) {
+                    IconButton(onClick = { onEditClick() }) {
                         Icon(Icons.TwoTone.Edit, contentDescription = "edit counter")
                     }
                 }
@@ -52,20 +52,20 @@ fun CounterCard(
             }
             Row {
                 Button( // increment button
-                    onClick = { onEvent(CounterCardEvent.Increment) },
+                    onClick = { onCounterEvent(CounterEvent.Increment) },
                 ) { Text("+") }
                 Button( //decrement button
-                    onClick = { onEvent(CounterCardEvent.Decrement) },
+                    onClick = { onCounterEvent(CounterEvent.Decrement) },
                     enabled = isDecrementEnabled,
                 ) { Text("-") }
                 Button( // reset button
-                    onClick = { onEvent(CounterCardEvent.Reset) },
+                    onClick = { onCounterEvent(CounterEvent.Reset) },
                     enabled = isResetEnabled,
                 ) {
                     Text("Reset")
                 }
                 Button( // delete button
-                    onClick = { onEvent(CounterCardEvent.Delete) },
+                    onClick = { onCounterEvent(CounterEvent.Delete) },
                 ) {
                     Icon(Icons.TwoTone.Delete, contentDescription = "delete counter")
                 }
@@ -89,7 +89,7 @@ fun CounterCardPreview_EditVisible_ButtonsEnabled() {
             isDecrementEnabled = true,
             isResetEnabled = true,
             isEditVisible = true,
-            onEvent = {}
+            onCounterEvent = {}
         )
     }
 }
@@ -106,7 +106,7 @@ fun CounterCardPreview_EditHidden_ButtonsDisabled() {
             isDecrementEnabled = false,
             isResetEnabled = false,
             isEditVisible = false,
-            onEvent = {}
+            onCounterEvent = {}
         )
     }
 }

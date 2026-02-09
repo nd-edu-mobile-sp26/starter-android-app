@@ -26,6 +26,15 @@ class EditViewModel(
         }
     }
 
+    fun onCounterCardEvent(event: CounterEvent) {
+        when (event) {
+            CounterEvent.Increment -> incrementCounter()
+            CounterEvent.Decrement -> decrementCounter()
+            CounterEvent.Reset -> resetCounter()
+            CounterEvent.Delete -> deleteCounter()// cannot be invoked
+        }
+    }
+
     fun incrementCounter() {
         viewModelScope.launch {
             counterState.value?.let { counter ->

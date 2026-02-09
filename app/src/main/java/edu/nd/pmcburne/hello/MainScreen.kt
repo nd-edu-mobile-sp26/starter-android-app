@@ -1,6 +1,5 @@
 package edu.nd.pmcburne.hello
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,14 +14,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Add
-import androidx.compose.material.icons.twotone.Delete
-import androidx.compose.material.icons.twotone.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,15 +31,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import edu.nd.pmcburne.hello.ui.theme.MyApplicationTheme
 
 @Composable
 fun MainScreen(
     viewModel: MainViewModel,
-    onEditClick: (Long) -> Unit,
+    onEditNavigation: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -54,7 +47,7 @@ fun MainScreen(
         DataStoreTextFieldExample(viewModel)
         Spacer(modifier = modifier.height(8.dp))
         NewCounterButton(viewModel)
-        CounterColumn(viewModel, onEditClick)
+        CounterColumn(viewModel, onEditNavigation)
     }
 }
 
@@ -133,7 +126,7 @@ fun NewCounterButton(viewModel: MainViewModel) {
 @Composable
 fun CounterColumn(
     viewModel: MainViewModel,
-    onEditClick: (Long) -> Unit,
+    onEditNavigation: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -146,15 +139,8 @@ fun CounterColumn(
                         isDecrementEnabled = viewModel.isDecrementEnabled(counter),
                         isResetEnabled = viewModel.isResetEnabled(counter),
                         isEditVisible = true,
-                        onEvent = { event ->
-                            when (event) {
-                                CounterCardEvent.Increment -> viewModel.incrementCounter(counter)
-                                CounterCardEvent.Decrement -> viewModel.decrementCounter(counter)
-                                CounterCardEvent.Reset -> viewModel.resetCounter(counter)
-                                CounterCardEvent.Delete -> viewModel.deleteCounter(counter)
-                                CounterCardEvent.Edit -> onEditClick(counter.uid)
-                            }
-                        }
+                        onEditClick = { onEditNavigation(counter.uid) },
+                        onCounterEvent = { event -> viewModel.onCounterCardEvent(event, counter)}
                     )
                 }
             }

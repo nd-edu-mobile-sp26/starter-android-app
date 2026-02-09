@@ -23,7 +23,7 @@ val TEXT_FIELD_CONTENTS = stringPreferencesKey("TEXT_FIELD")
 class MainViewModel(
     val counterDao: CounterDao,
     val dataStore: DataStore<Preferences>
-): ViewModel() {
+) : ViewModel() {
     val savedTextField: StateFlow<String> = dataStore.data
         .map { preferences ->
             preferences[TEXT_FIELD_CONTENTS] ?: ""
@@ -36,7 +36,6 @@ class MainViewModel(
 
     private val _countersState = MutableStateFlow<List<Counter>>(emptyList())
     val countersState: StateFlow<List<Counter>> = _countersState.asStateFlow()
-
 
 
     init {
@@ -58,12 +57,21 @@ class MainViewModel(
         }
     }
 
+    fun onCounterCardEvent(event: CounterEvent, counter: Counter) {
+        when (event) {
+            CounterEvent.Increment -> incrementCounter(counter)
+            CounterEvent.Decrement -> decrementCounter(counter)
+            CounterEvent.Reset -> resetCounter(counter)
+            CounterEvent.Delete -> deleteCounter(counter)
+        }
+    }
+
     /**
      * Adds a new counter to the screen
      */
     fun addNewCounter() {
         viewModelScope.launch {
-            val maxId = _countersState.value.maxOfOrNull { it.uid }?: 0
+            val maxId = _countersState.value.maxOfOrNull { it.uid } ?: 0
             counterDao.insertCounter(Counter(name = "Counter ${maxId + 1}"))
         }
     }
