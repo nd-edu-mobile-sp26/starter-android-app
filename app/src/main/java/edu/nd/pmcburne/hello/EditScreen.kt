@@ -29,15 +29,28 @@ import androidx.navigation.NavController
 @Composable
 fun EditScreen(
     viewModel: EditViewModel,
-    navController: NavController
+    onBack: () -> Unit
 ) {
     val counter by viewModel.counterState.collectAsState()
     var nameEntryText by rememberSaveable { mutableStateOf("") }
     var savedRecently by rememberSaveable { mutableStateOf(false) }
-
     counter?.let { counter ->
         Column {
-            EditScreenCounterCard(counter, viewModel, navController)
+            CounterCard(
+                counter = counter,
+                isEditVisible = false,
+                isDecrementEnabled = viewModel.isDecrementEnabled,
+                isResetEnabled = viewModel.isResetEnabled,
+                onEvent = { event ->
+                    when (event) {
+                        CounterCardEvent.Increment -> viewModel.incrementCounter()
+                        CounterCardEvent.Decrement -> viewModel.decrementCounter()
+                        CounterCardEvent.Reset -> viewModel.resetCounter()
+                        CounterCardEvent.Delete -> viewModel.deleteCounter()
+                        CounterCardEvent.Edit -> {} // cannot be invoked
+                    }
+                }
+            )
             Text("You can edit the name below")
             OutlinedTextField(
                 value = nameEntryText,
@@ -67,56 +80,9 @@ fun EditScreen(
             }
             TextButton(
                 modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer),
-                onClick = { navController.popBackStack() } // go back to previous screen
+                onClick = { onBack() } // go back to previous screen
             ) {
                 Text("Back")
-            }
-        }
-    }
-}
-
-@Composable
-fun EditScreenCounterCard(
-    counter: Counter,
-    viewModel: EditViewModel,
-    navController: NavController
-) {
-    Surface(modifier = Modifier.padding(4.dp)) {
-        Column {
-            Row {
-                Text(
-                    text = "Value: ${counter.name} - ${counter.value}",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-            Row {
-                Button(
-                    // increment button
-                    onClick = { viewModel.incrementCounter() },
-                ) { Text("+") }
-                Button(
-                    //decrement button
-                    onClick = { viewModel.decrementCounter() },
-                    enabled = viewModel.isDecrementEnabled,
-                ) {
-                    Text("-")
-                }
-                Button(
-                    // reset button
-                    onClick = { viewModel.resetCounter() },
-                    enabled = viewModel.isResetEnabled,
-                ) {
-                    Text("Reset")
-                }
-                Button( // delete Button
-                    onClick = {
-                        viewModel.deleteCounter()
-                        navController.popBackStack()
-                    },
-                ) {
-                    Icon(Icons.TwoTone.Delete, contentDescription = "delete counter")
-                }
-
             }
         }
     }

@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
                             })[MainViewModel::class.java]
                             MainScreen(
                                 viewModel = mainViewModel,
-                                navController = navController
+                                onEditClick = { id -> navController.navigate(EditRoute(id)) }
                             )
                         }
                         composable<EditRoute> { backStackEntry ->
@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             })[EditViewModel::class.java]
 
-                            EditScreen(viewModel = vm, navController = navController)
+                            EditScreen(viewModel = vm, onBack = { navController.popBackStack() })
                         }
                     }
                 }

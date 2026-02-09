@@ -1,5 +1,6 @@
 package edu.nd.pmcburne.hello
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,13 +35,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import edu.nd.pmcburne.hello.ui.theme.MyApplicationTheme
 
 @Composable
 fun MainScreen(
     viewModel: MainViewModel,
-    navController: NavController,
+    onEditClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -51,7 +54,7 @@ fun MainScreen(
         DataStoreTextFieldExample(viewModel)
         Spacer(modifier = modifier.height(8.dp))
         NewCounterButton(viewModel)
-        CounterColumn(viewModel, navController)
+        CounterColumn(viewModel, onEditClick)
     }
 }
 
@@ -130,7 +133,7 @@ fun NewCounterButton(viewModel: MainViewModel) {
 @Composable
 fun CounterColumn(
     viewModel: MainViewModel,
-    navController: NavController,
+    onEditClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -138,77 +141,23 @@ fun CounterColumn(
         Column(modifier = Modifier.fillMaxWidth()) {
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(counters) { counter ->
-                    CounterCard(viewModel, navController, counter)
+                    CounterCard(
+                        counter = counter,
+                        isDecrementEnabled = viewModel.isDecrementEnabled(counter),
+                        isResetEnabled = viewModel.isResetEnabled(counter),
+                        isEditVisible = true,
+                        onEvent = { event ->
+                            when (event) {
+                                CounterCardEvent.Increment -> viewModel.incrementCounter(counter)
+                                CounterCardEvent.Decrement -> viewModel.decrementCounter(counter)
+                                CounterCardEvent.Reset -> viewModel.resetCounter(counter)
+                                CounterCardEvent.Delete -> viewModel.deleteCounter(counter)
+                                CounterCardEvent.Edit -> onEditClick(counter.uid)
+                            }
+                        }
+                    )
                 }
             }
         }
     }
 }
-
-@Composable
-fun CounterCard(
-    viewModel: MainViewModel,
-    navController: NavController,
-    counter: Counter,
-    modifier: Modifier = Modifier,
-) {
-    Surface(modifier = Modifier.padding(4.dp)) {
-        Column {
-            Row {
-                Text(
-                    text = "Value: ${counter.name} - ${counter.value}",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                IconButton(
-                    onClick = {
-                        navController.navigate(EditRoute(counter.uid))
-                    }
-                ) {
-                    Icon(Icons.TwoTone.Edit, contentDescription = "edit counter")
-                }
-
-            }
-            Row {
-                Button( // increment button
-                    onClick = { viewModel.incrementCounter(counter) },
-                    modifier = modifier
-                ) { Text("+") }
-                Button( //decrement button
-                    onClick = { viewModel.decrementCounter(counter) },
-                    enabled = viewModel.isDecrementEnabled(counter),
-                    modifier = modifier
-                ) {
-                    Text("-")
-                }
-                Button( // reset button
-                    onClick = { viewModel.resetCounter(counter) },
-                    enabled = viewModel.isResetEnabled(counter),
-                    modifier = modifier
-                ) {
-                    Text("Reset")
-                }
-                Button( // delete button
-                    onClick = { viewModel.deleteCounter(counter) },
-                    modifier = modifier
-                ) {
-                   Icon(Icons.TwoTone.Delete, contentDescription = "delete counter")
-                }
-
-            }
-        }
-    }
-}
-
-
-/**
- * These previews is now broken since we can't initialize our view model without the app context
- * or underlying database. We'll address how to resolve this in the very near future!
- */
-//@Preview(name = "Light Mode Counter", showBackground = true)
-//@Preview(name = "Dark Mode Counter", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-//@Composable
-//fun CounterCardPreview() {
-//    MyApplicationTheme {
-//        CounterCard(viewModel = hmm.... how do we inject the database without app context?)
-//    }
-//}
