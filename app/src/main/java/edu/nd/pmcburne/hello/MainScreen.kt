@@ -1,5 +1,6 @@
 package edu.nd.pmcburne.hello
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -47,7 +49,7 @@ fun MainScreen(
         DataStoreTextFieldExample(viewModel)
         Spacer(modifier = modifier.height(8.dp))
         NewCounterButton(viewModel)
-        CounterColumn(viewModel, onEditNavigation)
+        CounterColumnWrapper(viewModel, onEditNavigation)
     }
 }
 
@@ -124,26 +126,57 @@ fun NewCounterButton(viewModel: MainViewModel) {
 //}
 
 @Composable
-fun CounterColumn(
+fun CounterColumnWrapper(
     viewModel: MainViewModel,
     onEditNavigation: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        val counters = viewModel.countersState.collectAsState().value
-        Column(modifier = Modifier.fillMaxWidth()) {
-            LazyColumn(modifier = Modifier.weight(1f)) {
-                items(counters) { counter ->
-                    CounterCard(
-                        counter = counter,
-                        isDecrementEnabled = viewModel.isDecrementEnabled(counter),
-                        isResetEnabled = viewModel.isResetEnabled(counter),
-                        isEditVisible = true,
-                        onEditClick = { onEditNavigation(counter.uid) },
-                        onCounterEvent = { event -> viewModel.onCounterCardEvent(event, counter)}
-                    )
-                }
+    val counters = viewModel.countersState.collectAsState().value
+    CounterColumn(
+        counters = counters,
+        isDecrementEnabled = { counter -> viewModel.isDecrementEnabled(counter) },
+        isResetEnabled = { counter -> viewModel.isResetEnabled(counter) },
+        onEditNavigation = onEditNavigation,
+        onCounterCardEvent = { event, counter -> viewModel.onCounterCardEvent(event, counter) },
+    )
+}
+
+@Composable
+fun CounterColumn(
+    counters: List<Counter>,
+    isDecrementEnabled: (Counter) -> Boolean,
+    isResetEnabled: (Counter) -> Boolean,
+    onEditNavigation: (Long) -> Unit,
+    onCounterCardEvent: (CounterEvent, Counter) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(counters) { counter ->
+                CounterCard(
+                    counter = counter,
+                    isDecrementEnabled = isDecrementEnabled(counter),
+                    isResetEnabled = isResetEnabled(counter),
+                    isEditVisible = true,
+                    onEditClick = { onEditNavigation(counter.uid) },
+                    onCounterEvent = { event -> onCounterCardEvent(event, counter)}
+                )
             }
         }
     }
+}
+
+@Preview(name = "Counter Column preview", showBackground = true)
+@Preview(name = "Counter Column preview - DarkMode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun counterColumnPreview() {
+    CounterColumn(
+        counters = listOf(
+            Counter("Sit-ups", 10, 1),
+            Counter("Push-ups", 20, 2),
+        ),
+        isDecrementEnabled = { counter -> true },
+        isResetEnabled = { counter -> false },
+        onEditNavigation = { },
+        onCounterCardEvent = { event, counter -> }
+    )
 }
