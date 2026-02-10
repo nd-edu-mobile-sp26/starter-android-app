@@ -49,19 +49,15 @@ fun MainScreen(
         DataStoreTextFieldExample(viewModel)
         Spacer(modifier = modifier.height(8.dp))
         NewCounterButton(viewModel)
-        CounterColumnWrapper(viewModel, onEditNavigation)
+        MainCounterColumn(viewModel, onEditNavigation)
     }
 }
 
 @Composable
 fun DataStoreTextFieldExample(viewModel: MainViewModel) {
-    // 1. Observe the persisted value from DataStore
     val savedName by viewModel.savedTextField.collectAsState(initial = "")
-
-    // 2. Local state for what is currently in the TextField
     var textFieldValue by rememberSaveable { mutableStateOf("") }
 
-    // Update the local text field when the saved value changes (e.g., on app start)
     LaunchedEffect(savedName) {
         textFieldValue = savedName
     }
@@ -126,10 +122,9 @@ fun NewCounterButton(viewModel: MainViewModel) {
 //}
 
 @Composable
-fun CounterColumnWrapper(
+fun MainCounterColumn(
     viewModel: MainViewModel,
-    onEditNavigation: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    onEditNavigation: (Long) -> Unit
 ) {
     val counters = viewModel.countersState.collectAsState().value
     CounterColumn(
