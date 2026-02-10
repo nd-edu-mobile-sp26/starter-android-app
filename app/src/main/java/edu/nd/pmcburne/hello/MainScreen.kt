@@ -169,9 +169,9 @@ fun counterColumnPreview() {
             Counter("Sit-ups", 10, 1),
             Counter("Push-ups", 20, 2),
         ),
-        isDecrementEnabled = { counter -> true },
-        isResetEnabled = { counter -> false },
+        isDecrementEnabled = { _ -> true },
+        isResetEnabled = { _ -> false },
         onEditNavigation = { },
-        onCounterCardEvent = { event, counter -> }
+        onCounterCardEvent = { _ , _ -> }
     )
 }
