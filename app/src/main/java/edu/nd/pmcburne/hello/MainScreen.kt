@@ -1,6 +1,10 @@
 package edu.nd.pmcburne.hello
 
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -47,6 +53,8 @@ fun MainScreen(
         )
         Spacer(modifier = modifier.height(8.dp))
         DataStoreTextFieldExample(viewModel)
+        Spacer(modifier = modifier.height(8.dp))
+        CountingTutorial()
         Spacer(modifier = modifier.height(8.dp))
         NewCounterButton(viewModel)
         MainCounterColumn(viewModel, onEditNavigation)
